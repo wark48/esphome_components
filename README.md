@@ -1,1 +1,19 @@
 # esphome_components
+My collection of components for esphome
+
+To use these components, use the [external components](https://esphome.io/components/external_components.html).
+
+Example:
+```yaml
+external_components:
+  - source:
+      type: git
+      url: https://github.com/wark48/esphome_components
+    components: [ component1, component2 ]
+```
+
+## Sources
+GIT [ssieb/esphome_components](https://github.com/ssieb/esphome_components)
+
+## NOTE: Some components have been merged to esphome 
+[esphome.io](https://esphome.io/components/)
