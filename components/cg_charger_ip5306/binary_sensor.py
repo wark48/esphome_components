@@ -14,18 +14,18 @@ CGChargerIP5306BinarySensor = cg_charger_ip5306_ns.class_(
 )
 
 SENSOR_TYPES = {
-    'charging': 'Charging Status',
-    'charge_complete': 'Charge Complete',
-    'light_load': 'Light Load',
-    'short_press': 'Short Press',
-    'long_press': 'Long Press',
-    'double_press': 'Double Press',
+    'charge_enabled': 'Charge Enabled (0x70 bit3)',
+    'charge_complete': 'Charge Complete (0x71 bit3)',
+    'light_load': 'Light Load (0x72 bit2)',
+    'short_press': 'Short Press (0x77 bit0)',
+    'long_press': 'Long Press (0x77 bit1)',
+    'double_press': 'Double Press (0x77 bit2)',
 }
 
 CONFIG_SCHEMA = binary_sensor.binary_sensor_schema(CGChargerIP5306BinarySensor).extend({
     cv.GenerateID(CONF_CG_CHARGER_IP5306_ID): cv.use_id(CGChargerIP5306Component),
     cv.Required(CONF_SENSOR_TYPE): cv.one_of(*SENSOR_TYPES, lower=True),
-}).extend(cv.polling_component_schema('60s'))
+}).extend(cv.polling_component_schema('1s'))
 
 async def to_code(config):
     var = await binary_sensor.new_binary_sensor(config)
