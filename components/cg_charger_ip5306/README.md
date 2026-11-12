@@ -5,9 +5,11 @@
 
 This component provides support for the Climateguard IP5306 battery charger I2C.
 
-DataSheet: 
-[Github](https://github.com/climateguard/CG_charger_IP)
 [Manufacturer's Website](https://climateguard.ru/cg_charger_ip/)
+
+[DataSheet (RU)](https://github.com/climateguard/CG_charger_IP)
+
+[IP5306 i2C Libs (Arduino)](https://github.com/AvinasheeTech/IP5306_I2C)
 
 You need an `i2c:` component configured.  All the sensors are optional.
 
