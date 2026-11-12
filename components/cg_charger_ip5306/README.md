@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> CURRENTLY IN THE TESTING PHASE
+
 # IP5306 battery charger 
 
 This component provides support for the Climateguard IP5306 battery charger I2C.
