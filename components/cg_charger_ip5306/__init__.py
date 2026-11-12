@@ -3,7 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import i2c
 from esphome.const import CONF_ID
 
-DEPENDENCIES = ['i2c']
+DEPENDENCIES = ['i2c', 'binary_sensor']
 MULTI_CONF = False
 
 CONF_CHARGING_CURRENT = 'charging_current'
