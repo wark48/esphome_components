@@ -7,16 +7,41 @@ namespace cg_charger_ip5306 {
 static const char *const TAG = "cg_charger_ip5306";
 
 void CGChargerIP5306Component::setup() {
-  // КРИТИЧНО: немедленно ограничиваем ток заряда значением из YAML
-  this->set_charging_current(this->configured_current_);
-
-  ESP_LOGCONFIG(TAG, "Setting up CG Charger IP5306 (charging_current=%.2fA)...",
-                this->configured_current_);
   uint8_t value;
   if (!this->read_register_(CG_IP5306_REG_SYS_CTL0, &value)) {
     ESP_LOGE(TAG, "Communication with CG Charger IP5306 failed!");
-    this->mark_failed();  // Вызов, НЕ переопределение (breaking change 2026.3)
+    this->mark_failed();
+    return;
   }
+  ESP_LOGCONFIG(TAG, "Setting up CG Charger IP5306 (charging_current=%.2fA)...",
+                this->configured_current_);
+
+  // Применяем конфигурацию из YAML (только заданные параметры)
+  this->set_charging_current(this->configured_current_);
+
+  if (this->has_boost_mode_) this->boost_mode(this->cfg_boost_mode_);
+  if (this->has_charger_mode_) this->charger_mode(this->cfg_charger_mode_);
+  if (this->has_power_on_load_) this->power_on_load(this->cfg_power_on_load_);
+  if (this->has_boost_always_on_) this->boost_always_on(this->cfg_boost_always_on_);
+  if (this->has_button_shutdown_) this->button_shutdown_enable(this->cfg_button_shutdown_);
+
+  if (this->has_boost_shutdown_long_press_) this->set_boost_shutdown_signal(this->cfg_boost_shutdown_long_press_);
+  if (this->has_led_double_press_) this->set_led_signal(this->cfg_led_double_press_);
+  if (this->has_short_press_boost_) this->short_press_boost_enable(this->cfg_short_press_boost_);
+  if (this->has_boost_after_vin_) this->boost_after_vin(this->cfg_boost_after_vin_);
+  if (this->has_low_battery_shutdown_) this->low_battery_shutdown_enable(this->cfg_low_battery_shutdown_);
+
+  if (this->has_long_press_time_) this->set_long_press_time(this->cfg_long_press_time_);
+  if (this->has_light_load_shutdown_time_) this->set_light_load_shutdown_time(this->cfg_light_load_shutdown_time_);
+
+  if (this->has_charging_stop_voltage_) this->set_charging_stop_voltage(this->cfg_charging_stop_voltage_);
+  if (this->has_end_charge_current_) this->set_end_charge_current(this->cfg_end_charge_current_);
+  if (this->has_charger_under_voltage_) this->set_charger_under_voltage(this->cfg_charger_under_voltage_);
+
+  if (this->has_battery_voltage_) this->set_battery_voltage(this->cfg_battery_voltage_);
+  if (this->has_voltage_pressure_) this->set_voltage_pressure(this->cfg_voltage_pressure_);
+
+  if (this->has_cc_loop_vin_) this->set_cc_loop(this->cfg_cc_loop_vin_);
 }
 
 void CGChargerIP5306Component::dump_config() {
@@ -25,6 +50,7 @@ void CGChargerIP5306Component::dump_config() {
   if (this->is_failed()) {
     ESP_LOGE(TAG, "Communication with CG Charger IP5306 failed!");
   }
+  ESP_LOGCONFIG(TAG, "  Configured charging current: %.2fA", this->configured_current_);
 }
 
 bool CGChargerIP5306Component::read_register_(uint8_t reg, uint8_t *value) {
@@ -129,11 +155,12 @@ void CGChargerIP5306Component::set_charging_current(float current) {
 }
 
 // --- Статусы ---
-bool CGChargerIP5306Component::is_charging() {
+bool CGChargerIP5306Component::is_charge_enabled() {
   uint8_t value;
   if (this->read_register_(CG_IP5306_REG_READ0, &value)) {
     return (value & 0x08) != 0;
   }
+  ESP_LOGW(TAG, "Failed to read charge_en flag");
   return false;
 }
 bool CGChargerIP5306Component::is_charge_complete() {
@@ -141,6 +168,7 @@ bool CGChargerIP5306Component::is_charge_complete() {
   if (this->read_register_(CG_IP5306_REG_READ1, &value)) {
     return (value & 0x08) != 0;
   }
+  ESP_LOGW(TAG, "Failed to read charge_complete flag");
   return false;
 }
 bool CGChargerIP5306Component::is_light_load() {
@@ -148,6 +176,7 @@ bool CGChargerIP5306Component::is_light_load() {
   if (this->read_register_(CG_IP5306_REG_READ2, &value)) {
     return (value & 0x04) != 0;
   }
+  ESP_LOGW(TAG, "Failed to read light_load flag");
   return false;
 }
 bool CGChargerIP5306Component::is_short_press() {
@@ -155,6 +184,7 @@ bool CGChargerIP5306Component::is_short_press() {
   if (this->read_register_(CG_IP5306_REG_READ3, &value)) {
     return (value & 0x01) != 0;
   }
+  ESP_LOGW(TAG, "Failed to read short_press flag");
   return false;
 }
 bool CGChargerIP5306Component::is_long_press() {
@@ -162,6 +192,7 @@ bool CGChargerIP5306Component::is_long_press() {
   if (this->read_register_(CG_IP5306_REG_READ3, &value)) {
     return (value & 0x02) != 0;
   }
+  ESP_LOGW(TAG, "Failed to read long_press flag");
   return false;
 }
 bool CGChargerIP5306Component::is_double_press() {
@@ -169,6 +200,7 @@ bool CGChargerIP5306Component::is_double_press() {
   if (this->read_register_(CG_IP5306_REG_READ3, &value)) {
     return (value & 0x04) != 0;
   }
+  ESP_LOGW(TAG, "Failed to read double_press flag");
   return false;
 }
 
@@ -182,26 +214,34 @@ uint8_t CGChargerIP5306Component::get_battery_level() {
     case 0xC0: return 50;
     case 0x80: return 75;
     case 0x00: return 100;
-    default:   return 0;
+    default:   return 255;  // неизвестно; README трактует 255 как NAN
   }
+}
+
+// Сброс флагов кнопок: "Write 1 Cleared" (регистр 0x77)
+void CGChargerIP5306Component::clear_press_flag_(uint8_t mask) {
+  this->update_register_bits_(CG_IP5306_REG_READ3, mask, mask);
 }
 
 // --- Бинарный сенсор ---
 void CGChargerIP5306BinarySensor::update() {
   if (this->parent_ == nullptr) return;
   bool value = false;
-  if (this->sensor_type_ == "charging") {
-    value = this->parent_->is_charging();
+  if (this->sensor_type_ == "charge_enabled") {
+    value = this->parent_->is_charge_enabled();
   } else if (this->sensor_type_ == "charge_complete") {
     value = this->parent_->is_charge_complete();
   } else if (this->sensor_type_ == "light_load") {
     value = this->parent_->is_light_load();
   } else if (this->sensor_type_ == "short_press") {
     value = this->parent_->is_short_press();
+    if (value) this->parent_->clear_press_flag_(0x01);
   } else if (this->sensor_type_ == "long_press") {
     value = this->parent_->is_long_press();
+    if (value) this->parent_->clear_press_flag_(0x02);
   } else if (this->sensor_type_ == "double_press") {
     value = this->parent_->is_double_press();
+    if (value) this->parent_->clear_press_flag_(0x04);
   }
   this->publish_state(value);
 }
