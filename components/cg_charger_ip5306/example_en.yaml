@@ -23,41 +23,40 @@ cg_charger_ip5306:
   charging_current: 0.6 # Ampere
 
   # ================= SYS_CTL0 – 0x00 =================
-  # Бит 5: Включение повышающего преобразователя (Boost)
-  #   0: отключено
-  #   1: включено
-  #   Дефолт: 1
-  #   Примечание: "После отключения IP5306 не может автоматически перейти в режим
-  #   низкого потребления. Для выключения и перехода в режим сна необходимо
-  #   отправить двойной импульс с помощью кнопки."
+  # Bit 5: Boost Converter Enable
+  # false - 0: Disabled
+  # true  - 1: Enabled
+  # Default: true
+  # Note: "After powering down, the IP5306 cannot automatically enter low-power mode
+  # To power down and enter sleep mode, you must
+  # send a double pulse using the button."
   boost_mode: true
 
-  # Бит 4: Управление зарядом (charger_en)
-  #   0: отключено
-  #   1: включено
-  #   Дефолт: 1
-  #   Примечание: "После завершения зарядки при полном заряде, при наличии
-  #   подключенного источника питания, можно повторно включить зарядку,
-  #   изменяя состояния: включить - отключить - включить, не отключая входное питание."
+  # Bit 4: Charge Management (charger_en)
+  # false - 0: Disabled
+  # true  - 1: Enabled
+  # Default: true
+  # Note: "After charging is complete and the battery is fully charged, if a power source is connected, charging can be re-enabled by
+  # cycling states: enabled, disabled, and enabled, without disconnecting the input power."
   charger_mode: true
 
-  # Бит 2: Включение функции автоматического включения при подключении нагрузки
-  #   0: отключено
-  #   1: включено
-  #   Дефолт: 1
+  # Bit 2: Enable automatic power-on when a load is connected
+  # false - 0: Disabled
+  # true  - 1: Enabled
+  # Default: true
   power_on_load: true
 
-  # Бит 1: BOOST вывод постоянно включен
-  #   0: отключено
-  #   1: включено
-  #   Дефолт: 1
+  # Bit 1: BOOST pin always on
+  # false - 0: Disabled
+  # true. - 1: Enabled
+  # Default: true
   boost_always_on: true
 
-  # Бит 0: Включение функции выключения по кнопке
-  #   0: отключено
-  #   1: включено
-  #   Дефолт: 0
-  button_shutdown_enable: true
+  # Bit 0: Enable button-based shutdown function
+  # false - 0: Disabled
+  # true  - 1: Enabled
+  # Default: false
+  button_shutdown_enable: false
 
   # ================= SYS_CTL1 – 0x01 (стр. 4–5) =================
   # Бит 7: Выбор сигнала управления для выключения повышающего преобразователя (boost)
