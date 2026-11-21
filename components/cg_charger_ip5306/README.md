@@ -13,6 +13,8 @@ You need an `i2c:` component configured.  All the sensors are optional.
 > [!IMPORTANT]
 > You need add "binary_sensor:". The values can be left empty.
 
+Full YAML with comments: [English](https://github.com/wark48/esphome_components/blob/main/components/cg_charger_ip5306/example_en.yaml) [Russian](https://github.com/wark48/esphome_components/blob/main/components/cg_charger_ip5306/example_ru.yaml)
+
 Example:
 ```yaml
 external_components:
