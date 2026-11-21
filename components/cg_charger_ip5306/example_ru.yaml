@@ -176,32 +176,32 @@ cg_charger_ip5306:
 # 4. Чтение статусов через бинарные сенсоры
 binary_sensor:
   # Регистр REG_READ0 – 0x70, бит 3: charge_en (флаг разрешения зарядки)
-  #   1: Зарядка включена
-  #   0: Зарядка выключена
+  #   on  - 1: Зарядка включена
+  #   off - 0: Зарядка выключена
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
     sensor_type: charge_enabled
     name: "IP5306 Charge Enabled"
 
   # Регистр REG_READ1 – 0x71, бит 3: флаг полного заряда
-  #   0: В процессе зарядки
-  #   1: Полностью заряжено
+  #   off - 0: В процессе зарядки
+  #   on  - 1: Полностью заряжено
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
     sensor_type: charge_complete
     name: "IP5306 Charge Complete"
 
   # Регистр REG_READ2 – 0x72, бит 2: флаг лёгкой нагрузки на выходе
-  #   0: Мощная нагрузка
-  #   1: Лёгкая нагрузка
+  #   off - 0: Мощная нагрузка
+  #   on  - 1: Лёгкая нагрузка
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
     sensor_type: light_load
     name: "IP5306 Light Load"
 
   # Регистр REG_READ3 – 0x77, бит 0: флаг короткого нажатия на кнопку KEY
-  #   1: Произведено короткое нажатие
-  #   0: Нет короткого нажатия
+  #   on  - 1: Произведено короткое нажатие
+  #   off - 0: Нет короткого нажатия
   #   Тип: R/W. Сброс — "Write 1 Cleared" (записать 1 в бит).
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
@@ -209,8 +209,8 @@ binary_sensor:
     name: "IP5306 Short Press"
 
   # Регистр REG_READ3 – 0x77, бит 1: флаг длительного нажатия на кнопку KEY
-  #   1: Произведено длительное нажатие
-  #   0: Нет длительного нажатия
+  #   on  - 1: Произведено длительное нажатие
+  #   off - 0: Нет длительного нажатия
   #   Тип: R/W. Сброс — "Write 1 Cleared".
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
@@ -218,8 +218,8 @@ binary_sensor:
     name: "IP5306 Long Press"
 
   # Регистр REG_READ3 – 0x77, бит 2: флаг двойного нажатия на кнопку KEY
-  #   1: Произведено двойное нажатие
-  #   0: Нет двойного нажатия
+  #   on  - 1: Произведено двойное нажатие
+  #   off - 0: Нет двойного нажатия
   #   Тип: R/W. Сброс — "Write 1 Cleared".
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
