@@ -1,6 +1,3 @@
-> [!IMPORTANT]
-> CURRENTLY IN THE TESTING PHASE
-
 # IP5306 battery charger 
 
 This component provides support for the Climateguard IP5306 battery charger I2C.
@@ -12,6 +9,9 @@ This component provides support for the Climateguard IP5306 battery charger I2C.
 [IP5306 i2C Libs (Arduino)](https://github.com/AvinasheeTech/IP5306_I2C)
 
 You need an `i2c:` component configured.  All the sensors are optional.
+
+> [!IMPORTANT]
+> You need add "binary_sensor:". The values can be left empty.
 
 Example:
 ```yaml
