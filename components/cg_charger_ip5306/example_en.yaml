@@ -138,100 +138,90 @@ cg_charger_ip5306:
   charger_under_voltage: 5 # 0 = 4.45V … 7 = 4.8V, 50mV steps
 
   # ================= Charger_CTL2 – 0x22 =================
-  # Биты 3:2: Настройка уровня напряжения батареи
-  #   11: 4.4 В
-  #   10: 4.35 В
-  #   01: 4.3 В
-  #   00: 4.2 В
-  #   Дефолт: 00
-  battery_voltage: 0   # 0=4.2В, 1=4.3В, 2=4.35В, 3=4.4В
+  # Bits 3:2: Battery Voltage Level Setting
+  # 3 - 11: 4.4V
+  # 2 - 10: 4.35V
+  # 1 - 01: 4.3V
+  # 0 - 00: 4.2V
+  # Default: 0
+  battery_voltage: 0 # 0=4.2V, 1=4.3V, 2=4.35V, 3=4.4V
 
-  # Биты 1:0: Настройка уровня дополнительного напряжения для постоянного
-  #           напряжения зарядки
-  #   11: +42 мВ
-  #   10: +28 мВ
-  #   01: +14 мВ
-  #   00: без дополнительного напряжения
-  #   Дефолт: 01
-  #   Примечание: "Рекомендуется использовать дополнительное напряжение +14 мВ
-  #   для уровней 4.30 В, 4.35 В и 4.4 В. Рекомендуется использовать
-  #   дополнительное напряжение +28 мВ для уровня 4.2 В."
-  voltage_pressure: 1   # 0=0мВ, 1=+14мВ, 2=+28мВ, 3=+42мВ
+  # Bits 1:0: Sets the auxiliary voltage level for constant
+  # charging voltage
+  # 3 - 11: +42 mV
+  # 2 - 10: +28 mV
+  # 1 - 01: +14 mV
+  # 0 - 00: No auxiliary voltage
+  # Default: 1
+  # Note: "It is recommended to use an auxiliary voltage of +14 mV
+  # for 4.30 V, 4.35 V, and 4.4 V levels. It is recommended to use an auxiliary 
+  # voltage of +28 mV for 4.2 V levels."
+  voltage_pressure: 1 # 0=0 mV, 1=+14 mV, 2=+28 mV, 3=+42 mV
 
-  # ================= Charger_CTL3 – 0x23 (стр. 7) =================
-  # Бит 5: Выбор петли постоянного тока зарядки
-  #   1: Петля постоянного тока на входе VIN (CC)
-  #   0: Петля постоянного тока на батарее (BAT) (CC)
-  #   Дефолт: 1
+  # ================= Charger_CTL3 – 0x23 =================
+  # Bit 5: Charging Constant Current Loop Select
+  # true  - 1: VIN Constant Current Loop (CC)
+  # false - 0: Battery Constant Current Loop (BAT) (CC)
+  # Default: true
   cc_loop_vin: true
 
-# 4. Чтение статусов через бинарные сенсоры
-# Даташит (стр. 3): "Используйте бит 3 регистра с адресом 0x70 для определения
-# состояния IP5306 (заряд или разряд): bit3=1 означает заряд, bit3=0 означает разряд."
-# Однако в карте регистров (стр. 7) бит 3 регистра 0x70 — это charge_en
-# (флаг разрешения зарядки), а не факт протекания тока.
-# Даташит (стр. 3): "Используйте бит 3 регистра с адресом 0x71 для определения
-# состояния заряда батареи: bit3=1 означает полный заряд, bit3=0 означает неполный заряд."
+# 4. Reading statuses via binary sensors
 binary_sensor:
-  # Регистр REG_READ0 – 0x70, бит 3: charge_en (флаг разрешения зарядки)
-  #   1: Зарядка включена
-  #   0: Зарядка выключена
+  # Register REG_READ0 – 0x70, bit 3: charge_en (charge enable flag)
+  # 1: Charging enabled
+  # 0: Charging disabled
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
     sensor_type: charge_enabled
     name: "IP5306 Charge Enabled"
 
-  # Регистр REG_READ1 – 0x71, бит 3: флаг полного заряда
-  #   0: В процессе зарядки
-  #   1: Полностью заряжено
+  # Register REG_READ1 – 0x71, bit 3: Fully charged flag
+  # 0: Charging in progress
+  # 1: Fully charged
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
     sensor_type: charge_complete
     name: "IP5306 Charge Complete"
 
-  # Регистр REG_READ2 – 0x72, бит 2: флаг лёгкой нагрузки на выходе
-  #   0: Мощная нагрузка
-  #   1: Лёгкая нагрузка
+  # Register REG_READ2 – 0x72, bit 2: Light Load Output Flag
+  # 0: Heavy Load
+  # 1: Light Load
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
     sensor_type: light_load
     name: "IP5306 Light Load"
 
-  # Регистр REG_READ3 – 0x77, бит 0: флаг короткого нажатия на кнопку KEY
-  #   1: Произведено короткое нажатие
-  #   0: Нет короткого нажатия
-  #   Тип: R/W. Сброс — "Write 1 Cleared" (записать 1 в бит).
+  # Register REG_READ3 – 0x77, bit 0: KEY button short press flag
+  # 1: Short press performed
+  # 0: No short press performed
+  # Type: R/W. Reset — "Write 1 Cleared" (write 1 to bit).
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
     sensor_type: short_press
     name: "IP5306 Short Press"
 
-  # Регистр REG_READ3 – 0x77, бит 1: флаг длительного нажатия на кнопку KEY
-  #   1: Произведено длительное нажатие
-  #   0: Нет длительного нажатия
-  #   Тип: R/W. Сброс — "Write 1 Cleared".
+  # Register REG_READ3 – 0x77, bit 1: KEY button long press flag
+  # 1: Long press performed
+  # 0: No long press performed
+  # Type: R/W. Reset — "Write 1 Cleared".
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
     sensor_type: long_press
     name: "IP5306 Long Press"
 
-  # Регистр REG_READ3 – 0x77, бит 2: флаг двойного нажатия на кнопку KEY
-  #   1: Произведено двойное нажатие
-  #   0: Нет двойного нажатия
-  #   Тип: R/W. Сброс — "Write 1 Cleared".
+  # Register REG_READ3 – 0x77, bit 2: KEY double-press flag
+  # 1: Double-press occurred
+  # 0: No double-press occurred
+  # Type: R/W. Reset — "Write 1 Cleared".
   - platform: cg_charger_ip5306
     cg_charger_ip5306_id: cg_charger_ip
     sensor_type: double_press
     name: "IP5306 Double Press"
 
-# 5. Уровень заряда (недокументированный регистр 0x78)
-# В даташите CG Charger IP регистр 0x78 отсутствует (последний описанный — 0x77).
-# Однако регистр стабильно работает и широко используется:
-#   - ESP32Marauder: тот же маппинг & 0xF0
-#   - AvinasheeTech/IP5306_I2C: список регистров
-# Даташит (стр. 3) предупреждает: "IP5306 не имеет информации о напряжении и токе,
-# поэтому для управления зарядом батареи необходимо использовать внешний
-# контроллер с АЦП". Регистр 0x78 — исключение (дискретные уровни 25/50/75/100%).
+# 5. Battery Level (undocumented register 0x78)
+# Note: "The IP5306 does not have voltage and current information, therefore, 
+# an external controller with an ADC must be used to manage battery charge." 
+# Register 0x78 — discrete levels of 25/50/75/100%.
 sensor:
   - platform: template
     name: "IP5306 Battery Level"
