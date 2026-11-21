@@ -18,7 +18,6 @@ Example:
 external_components:
   - source: github://wark48/esphome_components
     components: [cg_charger_ip5306]
-    refresh: 600s
 
 i2c:
   sda: GPIO21
