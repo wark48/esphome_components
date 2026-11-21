@@ -58,37 +58,35 @@ cg_charger_ip5306:
   # Default: false
   button_shutdown_enable: false
 
-  # ================= SYS_CTL1 – 0x01 (стр. 4–5) =================
-  # Бит 7: Выбор сигнала управления для выключения повышающего преобразователя (boost)
-  #   1: Длительное удержание кнопки
-  #   0: Двойное нажатие кнопки
-  #   Дефолт: 0
+  # ================= SYS_CTL1 – 0x01 =================
+  # Bit 7: Selecting the control signal to disable the boost converter
+  # true  - 1: Long press of the button
+  # false - 0: Double press of the button
+  # Default: false
   boost_shutdown_long_press: false
 
-  # Бит 6: Выбор сигнала управления для включения/выключения фонаря WLED
-  #   1: Двойное нажатие кнопки
-  #   0: Длительное удержание кнопки
-  #   Дефолт: 0
+  # Bit 6: Select control signal for turning the WLED light on/off
+  # true. - 1: Double-click the button
+  # false - 0: Long press the button
+  # Default: false
   led_double_press: false
 
-  # Бит 5: Выбор управления включением/выключением повышающего преобразователя
-  #        при коротком нажатии
-  #   0: Отключено
-  #   1: Включено
-  #   Дефолт: 0
+  # Bit 5: Boost Converter On/Off Control Selection Short Press
+  # false - 0: Disabled
+  # true  - 1: Enabled
+  # Default: false
   short_press_boost: false
 
-  # Бит 2: После отключения VIN, выбор включения/выключения повышающего
-  #        преобразователя (Boost)
-  #   0: Не включать
-  #   1: Включить
-  #   Дефолт: 1
+  # Bit 2: After disconnecting VIN, select whether to enable/disable the boost converter (Boost)
+  # false - 0: Disable
+  # true  - 1: Enable
+  # Default: true
   boost_after_vin: true
 
-  # Бит 0: Включение функции выключения при низком уровне заряда батареи (Batlow) 3.0V
-  #   0: Отключено
-  #   1: Включено
-  #   Дефолт: 1
+  # Bit 0: Enables the low battery shutdown function (Batlow) 3.0V
+  # false - 0: Disabled
+  # true  - 1: Enabled
+  # Default: true
   low_battery_shutdown: true
 
   # ================= SYS_CTL2 – 0x02 (стр. 5) =================
@@ -98,48 +96,48 @@ cg_charger_ip5306:
   #   Дефолт: 0
   long_press_time_3s: false
 
-  # Биты 3:2: Настройка времени автоматического выключения в режиме низкого потребления
-  #   11: 64 секунды
-  #   10: 16 секунд
-  #   01: 32 секунды
-  #   00: 8 секунд
-  #   Дефолт: 00
-  #   ВНИМАНИЕ: значения нелинейны (01=32с, 10=16с).
-  light_load_shutdown_time: 0   # 0=8с, 1=32с, 2=16с, 3=64с
+  # Bits 3:2: Setting the automatic shutdown time in low-power mode
+  # 3 - 11: 64 seconds
+  # 2 - 10: 16 seconds
+  # 1 - 01: 32 seconds
+  # 0 - 00: 8 seconds
+  # Default: 0
+  # NOTE: The values ​​are nonlinear (01=32 seconds, 10=16 seconds).  
+  light_load_shutdown_time: 0   # 0=8s, 1=32s, 2=16s, 3=64s
 
-  # ================= Charger_CTL0 – 0x20 (стр. 5–6) =================
-  # Биты 1:0: Настройка уровня остановки зарядки при полном заряде
-  #   11: 4.2 / 4.305 / 4.35 / 4.395 В
-  #   10: 4.185 / 4.29 / 4.335 / 4.38 В
-  #   01: 4.17 / 4.275 / 4.32 / 4.365 В
-  #   00: 4.14 / 4.26 / 4.305 / 4.35 В
-  #   Дефолт: 10
-  #   Примечание: "Рекомендуется использовать режимы 01 или 00 для наилучших результатов."
-  charging_stop_voltage: 0   # 0..3; рекомендуется 0 или 1
+  # ================= Charger_CTL0 – 0x20 =================
+  # Bits 1:0: Sets the stop charging voltage at full charge
+  # 3 - 11: 4.2 / 4.305 / 4.35 / 4.395 V
+  # 2 - 10: 4.185 / 4.29 / 4.335 / 4.38 V
+  # 1 - 01: 4.17 / 4.275 / 4.32 / 4.365 V
+  # 0 - 00: 4.14 / 4.26 / 4.305 / 4.35 V
+  # Default: 1
+  # Note: "It is recommended to use modes 01 or 00 for best results."
+  charging_stop_voltage: 1  # 0..3; 0 or 1 recommended
 
-  # ================= Charger_CTL1 – 0x21 (стр. 6) =================
-  # Биты 7:6: Настройка обнаружения тока при остановке зарядки на стороне АКБ
-  #   11: 600 мА
-  #   10: 500 мА
-  #   01: 400 мА
-  #   00: 200 мА
-  #   Дефолт: 01
-  #   Примечание: "IP5306 сначала проверяет ток, а затем проверяет напряжение
-  #   батареи при обнаружении полного заряда."
-  end_charge_current: 1   # 0=200мА, 1=400мА, 2=500мА, 3=600мА
+  # ================= Charger_CTL1 – 0x21 =================
+  # Bits 7:6: Setting the battery-side current detection when stopping charging
+  # 3 - 11: 600 mA
+  # 2 - 10: 500 mA
+  # 1 - 01: 400 mA
+  # 0 - 00: 200 mA
+  # Default: 1
+  # Note: "The IP5306 first checks the current and then checks the battery voltage
+  # when detecting a full charge."
+  end_charge_current: 1 # 0=200 mA, 1=400 mA, 2=500 mA, 3=600 mA
 
-  # Биты 4:2: Настройка уровня недостаточного напряжения при зарядке (VOUT)
-  #   111: 4.8 В    110: 4.75 В   101: 4.7 В    100: 4.65 В
-  #   011: 4.6 В    010: 4.55 В   001: 4.5 В    000: 4.45 В
-  #   Дефолт: 101 (4.7 В)
-  #   Примечание: "Во время зарядки IC будет контролировать напряжение на выходе
-  #   VOUT для автоматической регулировки зарядного тока. Когда напряжение VOUT
-  #   превышает установленное значение, заряд будет осуществляться с максимальным
-  #   током. Когда напряжение VOUT ниже установленного значения, зарядный ток
-  #   будет автоматически уменьшаться, чтобы поддерживать это напряжение."
-  charger_under_voltage: 5   # 0=4.45В … 7=4.8В, шаг 50мВ
+  # Bits 4:2: Setting the undervoltage level during charging (VOUT)
+  # 7 - 111: 4.8V | 6 - 110: 4.75V | 5 - 101: 4.7V | 4 - 100: 4.65V
+  # 3 - 011: 4.6V | 2 - 010: 4.55V | 1 - 001: 4.5V | 0 - 000: 4.45V
+  # Default: 5 (4.7V)
+  # Note: "During charging, the IC will monitor the voltage at the VOUT output
+  # to automatically adjust the charging current. When the VOUT voltage
+  # exceeds the set value, charging will be performed with the maximum
+  # current. When the VOUT voltage is below the set value, the charging current
+  # will automatically decrease to maintain this voltage."
+  charger_under_voltage: 5 # 0 = 4.45V … 7 = 4.8V, 50mV steps
 
-  # ================= Charger_CTL2 – 0x22 (стр. 6–7) =================
+  # ================= Charger_CTL2 – 0x22 =================
   # Биты 3:2: Настройка уровня напряжения батареи
   #   11: 4.4 В
   #   10: 4.35 В
