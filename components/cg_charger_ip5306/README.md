@@ -15,7 +15,6 @@ You need an `i2c:` component configured.  All the sensors are optional.
 
 Example:
 ```yaml
-# 1. Connecting an external component from GitHub
 external_components:
   - source:
       type: git
